@@ -2,11 +2,16 @@ import mongoose, { Schema } from "mongoose";
 
 const urlSchema = new Schema(
 	{
+		urlCode: {
+			type: String,
+			unique: true,
+		},
 		originalUrl: {
 			type: String,
 			required: true,
 			unique: true
 		},
+		// baseUrl/urlCode bit.ly/utydfwgc
 		shortUrl: {
 			type: String,
 			required: true,
@@ -24,6 +29,5 @@ const urlSchema = new Schema(
 	{ timestamps: true }
 );
 
-const Url = mongoose.model("Url", urlSchema);
+export const Url = mongoose.model("Url", urlSchema);
 
-export default Url
