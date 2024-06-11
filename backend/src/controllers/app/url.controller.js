@@ -1,8 +1,8 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { Url } from "../models/url.model.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { ApiError } from "../utils/ApiError.js";
-import { baseUrl } from "../constants.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { Url } from "../../models/app/url.model.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { baseUrl } from "../../constants.js";
 
 const generateUniqueIdentifier = () => {
 	let base62 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -63,12 +63,10 @@ const generateShortUrl = asyncHandler(async (req, res) => {
 
 const redirectToOriginalUrl = asyncHandler(async (req, res) => {
 	try {
-		const shortUrl = req.query;
-
-		console.log(shortUrl);
+		const { urlCode } = req.params;
 
 		const existedUrl = await Url.findOneAndUpdate(
-			shortUrl,
+			{ urlCode },
 			{
 				$inc: {
 					visits: 1,
@@ -79,17 +77,7 @@ const redirectToOriginalUrl = asyncHandler(async (req, res) => {
 			}
 		);
 
-		console.log(existedUrl);
-		return res
-			.status(301)
-			.redirect(existedUrl.originalUrl)
-			.json(
-				new ApiResponse(
-					301,
-					existedUrl.originalUrl,
-					"User redirected successfully"
-				)
-			);
+		return res.status(301).redirect(existedUrl.originalUrl);
 	} catch (error) {
 		throw new ApiError(500, "Failed to redirect");
 	}
